@@ -9,14 +9,14 @@ Author: Daniel Kroening, kroening@kroening.com
 /// \file
 /// limit class path loading
 
-#include <json/json_parser.h>
-
 #include "java_class_loader_limit.h"
+
+#include <json/json_parser.h>
 
 /// initializes class with either regex matcher or match set
 /// \par parameters: parameter from `java-cp-include-files`
 void java_class_loader_limitt::setup_class_load_limit(
-  std::string &java_cp_include_files)
+  const std::string &java_cp_include_files)
 {
   if(java_cp_include_files.empty())
     throw "class regexp cannot be empty";

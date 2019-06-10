@@ -207,7 +207,7 @@ public:
     bool is_atomic_end() const      { return type==goto_trace_stept::typet::ATOMIC_END; }
 
     // we may choose to hide
-    bool hidden;
+    bool hidden=false;
 
     exprt guard;
     literalt guard_literal;
@@ -225,7 +225,7 @@ public:
 
     // for INPUT/OUTPUT
     irep_idt format_string, io_id;
-    bool formatted;
+    bool formatted=false;
     std::list<exprt> io_args;
     std::list<exprt> converted_io_args;
 
@@ -233,10 +233,10 @@ public:
     irep_idt identifier;
 
     // for SHARED_READ/SHARED_WRITE and ATOMIC_BEGIN/ATOMIC_END
-    unsigned atomic_section_id;
+    unsigned atomic_section_id=0;
 
     // for slicing
-    bool ignore;
+    bool ignore=false;
 
     SSA_stept():
       type(goto_trace_stept::typet::NONE),
@@ -247,6 +247,7 @@ public:
       ssa_full_lhs(static_cast<const exprt &>(get_nil_irep())),
       original_full_lhs(static_cast<const exprt &>(get_nil_irep())),
       ssa_rhs(static_cast<const exprt &>(get_nil_irep())),
+      assignment_type(assignment_typet::STATE),
       cond_expr(static_cast<const exprt &>(get_nil_irep())),
       cond_literal(const_literal(false)),
       formatted(false),

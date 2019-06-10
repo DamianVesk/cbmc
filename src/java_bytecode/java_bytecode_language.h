@@ -18,6 +18,8 @@ Author: Daniel Kroening, kroening@kroening.com
 
 #define MAX_NONDET_ARRAY_LENGTH_DEFAULT 5
 
+class symbolt;
+
 enum lazy_methods_modet
 {
   LAZY_METHODS_MODE_EAGER,
@@ -57,8 +59,11 @@ public:
 
   virtual ~java_bytecode_languaget();
   java_bytecode_languaget():
+    assume_inputs_non_null(false),
     max_nondet_array_length(MAX_NONDET_ARRAY_LENGTH_DEFAULT),
-    max_user_array_length(0)
+    max_user_array_length(0),
+    lazy_methods_mode(lazy_methods_modet::LAZY_METHODS_MODE_EAGER),
+    string_refinement_enabled(false)
     {}
 
   bool from_expr(

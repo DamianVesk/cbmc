@@ -9,6 +9,8 @@ Author: Matt Lewis
 /// \file
 /// Loop Acceleration
 
+#include "accelerate.h"
+
 #include <analyses/natural_loops.h>
 
 #include <goto-programs/goto_functions.h>
@@ -22,7 +24,6 @@ Author: Matt Lewis
 #include <iostream>
 #include <list>
 
-#include "accelerate.h"
 #include "path.h"
 #include "polynomial_accelerator.h"
 #include "enumerating_loop_acceleration.h"
@@ -460,13 +461,13 @@ symbolt acceleratet::make_symbol(std::string name, typet type)
 
 void acceleratet::decl(symbol_exprt &sym, goto_programt::targett t)
 {
-  return;
-
+#if 0
   goto_programt::targett decl=program.insert_before(t);
   code_declt code(sym);
 
   decl->make_decl();
   decl->code=code;
+#endif
 }
 
 void acceleratet::decl(symbol_exprt &sym, goto_programt::targett t, exprt init)

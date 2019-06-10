@@ -9,6 +9,8 @@ Author: Daniel Kroening, kroening@kroening.com
 /// \file
 /// Symbolic Execution
 
+#include "symex_target_equation.h"
+
 #include <cassert>
 
 #include <util/std_expr.h>
@@ -19,7 +21,6 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <solvers/prop/literal_expr.h>
 
 #include "goto_symex_state.h"
-#include "symex_target_equation.h"
 
 symex_target_equationt::symex_target_equationt(
   const namespacet &_ns):ns(_ns)
@@ -510,7 +511,7 @@ void symex_target_equationt::convert_assertions(
         prop_conv.set_to_true(step.cond_expr);
     }
 
-    assert(false); // unreachable
+    UNREACHABLE; // unreachable
   }
 
   // We do (NOT a1) OR (NOT a2) ...
@@ -646,17 +647,23 @@ void symex_target_equationt::SSA_stept::output(
     switch(assignment_type)
     {
     case assignment_typet::HIDDEN:
-      out << "HIDDEN"; break;
+      out << "HIDDEN";
+      break;
     case assignment_typet::STATE:
-      out << "STATE"; break;
+      out << "STATE";
+      break;
     case assignment_typet::VISIBLE_ACTUAL_PARAMETER:
-      out << "VISIBLE_ACTUAL_PARAMETER"; break;
+      out << "VISIBLE_ACTUAL_PARAMETER";
+      break;
     case assignment_typet::HIDDEN_ACTUAL_PARAMETER:
-      out << "HIDDEN_ACTUAL_PARAMETER"; break;
+      out << "HIDDEN_ACTUAL_PARAMETER";
+      break;
     case assignment_typet::PHI:
-      out << "PHI"; break;
+      out << "PHI";
+      break;
     case assignment_typet::GUARD:
-      out << "GUARD"; break;
+      out << "GUARD";
+      break;
     default:
       {
       }
@@ -688,7 +695,7 @@ void symex_target_equationt::SSA_stept::output(
   case goto_trace_stept::typet::GOTO:
     out << "IF " << from_expr(ns, "", cond_expr) << " GOTO\n"; break;
 
-  default: assert(false);
+  default: UNREACHABLE;
   }
 
   if(is_assert() || is_assume() || is_assignment() || is_constraint())

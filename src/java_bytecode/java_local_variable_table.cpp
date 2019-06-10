@@ -10,8 +10,11 @@ Author: Chris Smowton, chris.smowton@diffblue.com
 /// Java local variable table processing
 
 #include "java_bytecode_convert_method_class.h"
+
 #include "java_types.h"
 
+#include <util/arith_tools.h>
+#include <util/invariant.h>
 #include <util/string2int.h>
 
 #include <climits>
@@ -91,7 +94,7 @@ struct procedure_local_cfg_baset<
   }
 };
 
-// Grab some class typdefs for brevity:
+// Grab some class typedefs for brevity:
 typedef java_bytecode_convert_methodt::holet
   holet;
 typedef java_bytecode_convert_methodt::local_variable_with_holest
@@ -176,21 +179,22 @@ static bool is_store_to_slot(
   if(!(prevstatement.size()>=1 && prevstatement.substr(1, 5)=="store"))
     return false;
 
-  std::string storeslot;
+  unsigned storeslotidx;
   if(inst.args.size()==1)
   {
     // Store with an argument:
     const auto &arg=inst.args[0];
-    storeslot=id2string(to_constant_expr(arg).get_value());
+    bool ret=to_unsigned_integer(to_constant_expr(arg), storeslotidx);
+    CHECK_RETURN(!ret);
   }
   else
   {
     // Store shorthands, like "store_0", "store_1"
     assert(prevstatement[6]=='_' && prevstatement.size()==8);
-    storeslot=prevstatement[7];
+    std::string storeslot(1, prevstatement[7]);
     assert(isdigit(storeslot[0]));
+    storeslotidx=safe_string2unsigned(storeslot);
   }
-  auto storeslotidx=safe_string2unsigned(storeslot);
   return storeslotidx==slotidx;
 }
 
@@ -287,7 +291,7 @@ static void populate_predecessor_map(
         auto pred_var=
           (pred<live_variable_at_address.size() ?
            live_variable_at_address[pred] :
-           0);
+           nullptr);
         if(pred_var==&*it)
         {
           // Flow from within same live range?

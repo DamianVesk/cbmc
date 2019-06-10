@@ -9,6 +9,8 @@ Author: Daniel Kroening, kroening@kroening.com
 /// \file
 /// Symex Command Line Options Processing
 
+#include "clobber_parse_options.h"
+
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
@@ -37,7 +39,6 @@ Author: Daniel Kroening, kroening@kroening.com
 
 #include <cbmc/version.h>
 
-#include "clobber_parse_options.h"
 // #include "clobber_instrumenter.h"
 
 clobber_parse_optionst::clobber_parse_optionst(int argc, const char **argv):
@@ -146,7 +147,7 @@ int clobber_parse_optionst::doit()
     if(!out)
       throw std::string("failed to create file simulator.c");
 
-    dump_c(goto_functions, true, ns, out);
+    dump_c(goto_functions, true, false, ns, out);
 
     status() << "instrumentation complete; compile and execute simulator.c"
              << eom;
@@ -249,7 +250,7 @@ bool clobber_parse_optionst::get_goto_program(
 
       languaget *language=get_language_from_filename(filename);
 
-      if(language==NULL)
+      if(language==nullptr)
       {
         error() << "failed to figure out type of file `" <<  filename << "'"
                 << eom;
@@ -433,7 +434,7 @@ void clobber_parse_optionst::report_success()
     break;
 
   default:
-    assert(false);
+    UNREACHABLE;
   }
 }
 
@@ -458,7 +459,7 @@ void clobber_parse_optionst::show_counterexample(
     break;
 
   default:
-    assert(false);
+    UNREACHABLE;
   }
 }
 
@@ -481,7 +482,7 @@ void clobber_parse_optionst::report_failure()
     break;
 
   default:
-    assert(false);
+    UNREACHABLE;
   }
 }
 

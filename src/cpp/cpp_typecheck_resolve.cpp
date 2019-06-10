@@ -9,6 +9,8 @@ Author: Daniel Kroening, kroening@cs.cmu.edu
 /// \file
 /// C++ Language Type Checking
 
+#include "cpp_typecheck_resolve.h"
+
 #include <cstdlib>
 #include <algorithm>
 
@@ -22,14 +24,14 @@ Author: Daniel Kroening, kroening@cs.cmu.edu
 #include <ansi-c/anonymous_member.h>
 
 #include "cpp_typecheck.h"
-#include "cpp_typecheck_resolve.h"
 #include "cpp_template_type.h"
 #include "cpp_type2name.h"
 #include "cpp_util.h"
 #include "cpp_convert_type.h"
 
 cpp_typecheck_resolvet::cpp_typecheck_resolvet(cpp_typecheckt &_cpp_typecheck):
-  cpp_typecheck(_cpp_typecheck)
+  cpp_typecheck(_cpp_typecheck),
+  original_scope(nullptr) // set in resolve_scope()
 {
 }
 
@@ -403,7 +405,7 @@ void cpp_typecheck_resolvet::filter(
       break;
 
     default:
-      assert(false);
+      UNREACHABLE;
     }
 
     if(match)
@@ -1116,7 +1118,7 @@ symbol_typet cpp_typecheck_resolvet::disambiguate_template_classes(
       static_cast<cpp_scopet *>(
         cpp_typecheck.cpp_scopes.id_map[id]);
 
-    if(template_scope==NULL)
+    if(template_scope==nullptr)
     {
       cpp_typecheck.error().source_location=source_location;
       cpp_typecheck.error() << "template identifier: " << id << '\n'
@@ -1269,7 +1271,7 @@ cpp_scopet &cpp_typecheck_resolvet::resolve_namespace(
     cpp_typecheck.error().source_location=source_location;
     cpp_typecheck.error()
       << "namespace `"
-      << base_name << "' is ambigous" << messaget::eom;
+      << base_name << "' is ambiguous" << messaget::eom;
     throw 0;
   }
 }
@@ -1801,7 +1803,7 @@ void cpp_typecheck_resolvet::guess_template_args(
 
     if(cpp_name.has_template_args())
     {
-      // this could be s.th. like my_template<T>, and we need
+      // this could be something like my_template<T>, and we need
       // to match 'T'. Then 'desired_type' has to be a template instance.
 
       // TODO
@@ -1958,7 +1960,7 @@ exprt cpp_typecheck_resolvet::guess_function_template_args(
     static_cast<cpp_scopet *>(
       cpp_typecheck.cpp_scopes.id_map[template_identifier]);
 
-  if(template_scope==NULL)
+  if(template_scope==nullptr)
   {
     cpp_typecheck.error().source_location=source_location;
     cpp_typecheck.error() << "template identifier: "
@@ -2076,7 +2078,7 @@ void cpp_typecheck_resolvet::apply_template_args(
 
   // We never try 'unassigned' template arguments.
   if(template_args_tc.has_unassigned())
-    assert(false);
+    UNREACHABLE;
 
   // a template is always a declaration
   const cpp_declarationt &cpp_declaration=

@@ -11,25 +11,33 @@ Date:   April 2010
 /// \file
 /// Command line interpretation for goto-cc
 
+#include "goto_cc_cmdline.h"
+
 #include <cstring>
 #include <cassert>
 #include <iostream>
 #include <cstdio>
 
+#include <util/invariant.h>
 #include <util/prefix.h>
 #include <util/tempfile.h>
-
-#include "goto_cc_cmdline.h"
 
 goto_cc_cmdlinet::~goto_cc_cmdlinet()
 {
   if(!stdin_file.empty())
-    remove(stdin_file.c_str());
+  {
+    int result=remove(stdin_file.c_str());
+    if(result!=0)
+    {
+      // Let's print the error to stderr instead of ignoring it completely
+      std::perror("Remove failed");
+    }
+  }
 }
 
 bool goto_cc_cmdlinet::in_list(const char *option, const char **list)
 {
-  for(std::size_t i=0; list[i]!=NULL; i++)
+  for(std::size_t i=0; list[i]!=nullptr; i++)
   {
     if(strcmp(option, list[i])==0)
       return true;
@@ -43,7 +51,7 @@ bool goto_cc_cmdlinet::prefix_in_list(
   const char **list,
   std::string &prefix)
 {
-  for(std::size_t i=0; list[i]!=NULL; i++)
+  for(std::size_t i=0; list[i]!=nullptr; i++)
   {
     if(strncmp(option, list[i], strlen(list[i]))==0)
     {
@@ -94,7 +102,7 @@ std::size_t goto_cc_cmdlinet::get_optnr(const std::string &opt_string)
   }
   else
   {
-    assert(false);
+    UNREACHABLE;
     return -1;
   }
 

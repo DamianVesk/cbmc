@@ -6,14 +6,14 @@ Author: CM Wintersteiger
 
 \*******************************************************************/
 
+#include "qbf_qube_core.h"
 
 #include <cassert>
 #include <cstdlib>
 #include <fstream>
+#include <cstring>
 
 #include <util/mp_arith.h>
-
-#include "qbf_qube_core.h"
 
 qbf_qube_coret::qbf_qube_coret() : qdimacs_coret()
 {
@@ -103,8 +103,19 @@ propt::resultt qbf_qube_coret::prop_solve()
     }
   }
 
-  remove(result_tmp_file.c_str());
-  remove(qbf_tmp_file.c_str());
+  int remove_result=remove(result_tmp_file.c_str());
+  if(remove_result!=0)
+  {
+    messaget::error() << "Remove failed: " << std::strerror(errno) << eom;
+    return resultt::P_ERROR;
+  }
+
+  remove_result=remove(qbf_tmp_file.c_str());
+  if(remove_result!=0)
+  {
+    messaget::error() << "Remove failed: " << std::strerror(errno) << eom;
+    return resultt::P_ERROR;
+  }
 
   if(result)
   {

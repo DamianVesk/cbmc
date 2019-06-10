@@ -25,7 +25,8 @@ Author: Daniel Kroening, kroening@kroening.com
 class flow_insensitive_abstract_domain_baset
 {
 public:
-  flow_insensitive_abstract_domain_baset()
+  flow_insensitive_abstract_domain_baset():
+    changed(false)
   {
   }
 
@@ -161,7 +162,7 @@ protected:
     working_set.push(l);
   }
 
-  // true = found s.th. new
+  // true = found something new
   bool fixedpoint(
     const goto_programt &goto_program,
     const goto_functionst &goto_functions);
@@ -173,7 +174,7 @@ protected:
   void fixedpoint(
     const goto_functionst &goto_functions);
 
-  // true = found s.th. new
+  // true = found something new
   bool visit(
     locationt l,
     working_sett &working_set,

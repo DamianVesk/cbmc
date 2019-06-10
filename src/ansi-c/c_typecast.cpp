@@ -6,6 +6,7 @@ Author: Daniel Kroening, kroening@kroening.com
 
 \*******************************************************************/
 
+#include "c_typecast.h"
 
 #include <algorithm>
 
@@ -20,7 +21,6 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <util/symbol.h>
 #include <util/simplify_expr.h>
 
-#include "c_typecast.h"
 #include "c_qualifiers.h"
 
 bool c_implicit_typecast(
@@ -378,11 +378,11 @@ void c_typecastt::implicit_typecast_arithmetic(
     }
     return;
 
-  case BOOL:       assert(false); // should always be promoted to int
-  case CHAR:       assert(false); // should always be promoted to int
-  case UCHAR:      assert(false); // should always be promoted to int
-  case SHORT:      assert(false); // should always be promoted to int
-  case USHORT:     assert(false); // should always be promoted to int
+  case BOOL:       UNREACHABLE; // should always be promoted to int
+  case CHAR:       UNREACHABLE; // should always be promoted to int
+  case UCHAR:      UNREACHABLE; // should always be promoted to int
+  case SHORT:      UNREACHABLE; // should always be promoted to int
+  case USHORT:     UNREACHABLE; // should always be promoted to int
   case INT:        new_type=signed_int_type(); break;
   case UINT:       new_type=unsigned_int_type(); break;
   case LONG:       new_type=signed_long_int_type(); break;
@@ -715,7 +715,7 @@ void c_typecastt::do_typecast(exprt &expr, const typet &dest_type)
   if(src_type!=dest_type)
   {
     // C booleans are special; we produce the
-    // explicit comparision with zero.
+    // explicit comparison with zero.
     // Note that this requires ieee_float_notequal
     // in case of floating-point numbers.
 

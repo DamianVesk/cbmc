@@ -8,6 +8,7 @@ Date: April 2010
 
 \*******************************************************************/
 
+#include "goto_rw.h"
 
 #include <limits>
 #include <algorithm>
@@ -23,8 +24,6 @@ Date: April 2010
 #include <goto-programs/goto_functions.h>
 
 #include <pointer-analysis/goto_program_dereference.h>
-
-#include "goto_rw.h"
 
 range_domain_baset::~range_domain_baset()
 {
@@ -220,12 +219,12 @@ void rw_range_sett::get_objects_member(
 
   const struct_typet &struct_type=to_struct_type(type);
 
-  // TODO - assumes members are byte-aligned
   range_spect offset=
-    to_range_spect(member_offset(
+    to_range_spect(
+      member_offset_bits(
         struct_type,
         expr.get_component_name(),
-        ns) * 8);
+        ns));
 
   if(offset!=-1)
     offset+=range_start;
@@ -464,9 +463,10 @@ void rw_range_sett::add(
 {
   objectst::iterator entry=(mode==get_modet::LHS_W ? w_range_set : r_range_set).
     insert(
-      std::pair<const irep_idt&, range_domain_baset*>(identifier, 0)).first;
+      std::pair<const irep_idt&, range_domain_baset*>(
+        identifier, nullptr)).first;
 
-  if(entry->second==0)
+  if(entry->second==nullptr)
     entry->second=new range_domaint();
 
   static_cast<range_domaint*>(entry->second)->push_back(
@@ -664,9 +664,10 @@ void rw_guarded_range_set_value_sett::add(
 {
   objectst::iterator entry=(mode==get_modet::LHS_W ? w_range_set : r_range_set).
     insert(
-      std::pair<const irep_idt&, range_domain_baset*>(identifier, 0)).first;
+      std::pair<const irep_idt&, range_domain_baset*>(
+        identifier, nullptr)).first;
 
-  if(entry->second==0)
+  if(entry->second==nullptr)
     entry->second=new guarded_range_domaint();
 
   static_cast<guarded_range_domaint*>(entry->second)->insert(
@@ -707,7 +708,7 @@ void goto_rw(goto_programt::const_targett target,
   switch(target->type)
   {
   case NO_INSTRUCTION_TYPE:
-    assert(false);
+    UNREACHABLE;
     break;
 
   case GOTO:

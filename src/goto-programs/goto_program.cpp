@@ -9,13 +9,13 @@ Author: Daniel Kroening, kroening@kroening.com
 /// \file
 /// Program Transformation
 
+#include "goto_program.h"
+
 #include <ostream>
 
 #include <util/std_expr.h>
 
 #include <langapi/language_util.h>
-
-#include "goto_program.h"
 
 /// See below.
 /// \param ns: the namespace to resolve the expressions in
@@ -33,9 +33,13 @@ std::ostream &goto_programt::output_instruction(
   return output_instruction(ns, identifier, out, *it);
 }
 
-/// Writes to out a two line string representation of the specific instruction.
-/// It is of the format: // {location} file {source file} line {line in source
-/// file} {representation of the instruction}
+/// Writes to \p out a two/three line string representation of a given
+/// \p instruction. The output is of the format:
+/// ```
+///   // {location} file {source file} line {line in source file}
+///   // Labels: {list-of-labels}
+///   {representation of the instruction}
+/// ```
 /// \param ns: the namespace to resolve the expressions in
 /// \param identifier: the identifier used to find a symbol to identify the
 ///   source language
@@ -480,6 +484,4 @@ std::string as_string(
   default:
     throw "unknown statement";
   }
-
-  return "";
 }

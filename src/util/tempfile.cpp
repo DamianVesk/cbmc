@@ -6,6 +6,7 @@ Author: Daniel Kroening
 
 \*******************************************************************/
 
+#include "tempfile.h"
 
 #ifdef _WIN32
 #include <process.h>
@@ -33,8 +34,6 @@ Author: Daniel Kroening
 #include <sys/time.h>
 #endif
 
-#include "tempfile.h"
-
 /// Substitute for mkstemps (OpenBSD standard) for Windows, where it is
 /// unavailable.
 #ifdef _WIN32
@@ -45,7 +44,10 @@ int my_mkstemps(char *template_str, int suffix_len)
 
   std::size_t template_length=strlen(template_str);
 
-  if(suffix_len+6>template_length)
+  if(suffix_len<0)
+    return -1;
+
+  if(static_cast<std::size_t>(suffix_len+6)>template_length)
     return -1; // suffix too long
 
   char *XXXXXX_pos=
@@ -105,7 +107,7 @@ std::string get_temporary_file(
   #else
   std::string dir="/tmp/";
   const char *TMPDIR_env=getenv("TMPDIR");
-  if(TMPDIR_env!=0)
+  if(TMPDIR_env!=nullptr)
     dir=TMPDIR_env;
   if(*dir.rbegin()!='/')
     dir+='/';

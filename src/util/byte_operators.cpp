@@ -6,10 +6,11 @@ Author: Daniel Kroening, kroening@kroening.com
 
 \*******************************************************************/
 
+#include "byte_operators.h"
 
 #include <cassert>
 
-#include "byte_operators.h"
+#include "invariant.h"
 #include "config.h"
 
 irep_idt byte_extract_id()
@@ -23,7 +24,7 @@ irep_idt byte_extract_id()
     return ID_byte_extract_big_endian;
 
   default:
-    assert(false);
+    UNREACHABLE;
   }
 }
 
@@ -38,6 +39,6 @@ irep_idt byte_update_id()
     return ID_byte_update_big_endian;
 
   default:
-    assert(false);
+    UNREACHABLE;
   }
 }

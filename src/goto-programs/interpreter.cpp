@@ -9,6 +9,8 @@ Author: Daniel Kroening, kroening@kroening.com
 /// \file
 /// Interpreter for GOTO Programs
 
+#include "interpreter.h"
+
 #include <cctype>
 #include <cstdio>
 #include <iostream>
@@ -17,7 +19,6 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <util/std_types.h>
 #include <util/symbol_table.h>
 
-#include "interpreter.h"
 #include "interpreter_class.h"
 
 void interpretert::operator()()
@@ -69,7 +70,7 @@ void interpretert::command()
 {
   #define BUFSIZE 100
   char command[BUFSIZE];
-  if(fgets(command, BUFSIZE-1, stdin)==NULL)
+  if(fgets(command, BUFSIZE-1, stdin)==nullptr)
   {
     done=true;
     return;

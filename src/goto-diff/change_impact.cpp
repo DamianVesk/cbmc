@@ -11,6 +11,8 @@ Date: April 2016
 /// \file
 /// Data and control-dependencies of syntactic diff
 
+#include "change_impact.h"
+
 #include <iostream>
 
 #include <goto-programs/goto_model.h>
@@ -19,7 +21,6 @@ Date: April 2016
 
 #include "unified_diff.h"
 
-#include "change_impact.h"
 #if 0
   struct cfg_nodet
   {
@@ -590,7 +591,7 @@ void change_impactt::output_change_impact(
     else if(mod_flags&DEL_CTRL_DEP)
       prefix='c';
     else
-      assert(false);
+      UNREACHABLE;
 
     output_instruction(prefix, goto_program, ns, function, target);
   }
@@ -652,12 +653,12 @@ void change_impactt::output_change_impact(
       else if(old_mod_flags&DEL_CTRL_DEP)
         prefix='c';
       else
-        assert(false);
+        UNREACHABLE;
 
       ++o_target;
     }
     else if(mod_flags&DELETED)
-      assert(false);
+      UNREACHABLE;
     else if(mod_flags&NEW)
       prefix='+';
     else if(mod_flags&NEW_DATA_DEP)
@@ -679,7 +680,7 @@ void change_impactt::output_change_impact(
       ++o_target;
     }
     else
-      assert(false);
+      UNREACHABLE;
 
     output_instruction(prefix, goto_program, n_ns, function, target);
   }
@@ -696,17 +697,17 @@ void change_impactt::output_change_impact(
     // syntactic changes are preferred over data/control-dependence
     // modifications
     if(old_mod_flags==SAME)
-      assert(false);
+      UNREACHABLE;
     else if(old_mod_flags&DELETED)
       prefix='-';
     else if(old_mod_flags&NEW)
-      assert(false);
+      UNREACHABLE;
     else if(old_mod_flags&DEL_DATA_DEP)
       prefix='d';
     else if(old_mod_flags&DEL_CTRL_DEP)
       prefix='c';
     else
-      assert(false);
+      UNREACHABLE;
 
     output_instruction(prefix, goto_program, o_ns, function, o_target);
   }

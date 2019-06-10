@@ -11,6 +11,8 @@ Author: Daniel Kroening
 /// \file
 /// Traces of GOTO Programs
 
+#include "goto_trace.h"
+
 #include <cassert>
 #include <ostream>
 
@@ -19,8 +21,6 @@ Author: Daniel Kroening
 
 #include <ansi-c/printf_formatter.h>
 #include <langapi/language_util.h>
-
-#include "goto_trace.h"
 
 void goto_tracet::output(
   const class namespacet &ns,
@@ -53,7 +53,7 @@ void goto_trace_stept::output(
   case goto_trace_stept::typet::FUNCTION_CALL: out << "FUNCTION CALL"; break;
   case goto_trace_stept::typet::FUNCTION_RETURN:
     out << "FUNCTION RETURN"; break;
-  default: assert(false);
+  default: UNREACHABLE;
   }
 
   if(type==typet::ASSERT || type==typet::ASSUME || type==typet::GOTO)
@@ -383,16 +383,16 @@ void show_goto_trace(
       break;
 
     case goto_trace_stept::typet::CONSTRAINT:
-      assert(false);
+      UNREACHABLE;
       break;
 
     case goto_trace_stept::typet::SHARED_READ:
     case goto_trace_stept::typet::SHARED_WRITE:
-      assert(false);
+      UNREACHABLE;
       break;
 
     default:
-      assert(false);
+      UNREACHABLE;
     }
   }
 }

@@ -6,6 +6,7 @@ Author: Daniel Kroening, kroening@kroening.com
 
 \*******************************************************************/
 
+#include "bv_arithmetic.h"
 
 #include <cassert>
 #include <ostream>
@@ -14,7 +15,6 @@ Author: Daniel Kroening, kroening@kroening.com
 #include "arith_tools.h"
 #include "std_types.h"
 #include "std_expr.h"
-#include "bv_arithmetic.h"
 
 typet bv_spect::to_type() const
 {
@@ -42,7 +42,7 @@ void bv_spect::from_type(const typet &type)
   else if(type.id()==ID_signedbv)
     is_signed=true;
   else
-    assert(0);
+    UNREACHABLE;
 
   width=unsafe_string2unsigned(type.get_string(ID_width));
 }

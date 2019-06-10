@@ -9,6 +9,8 @@ Author: Daniel Kroening, kroening@kroening.com
 /// \file
 /// Symbolic Execution of ANSI-C
 
+#include "goto_symex.h"
+
 #include <cassert>
 
 #include <util/arith_tools.h>
@@ -26,7 +28,6 @@ Author: Daniel Kroening, kroening@kroening.com
 
 #include <linking/zero_initializer.h>
 
-#include "goto_symex.h"
 #include "goto_symex_state.h"
 
 inline static typet c_sizeof_type_rec(const exprt &expr)
@@ -168,7 +169,7 @@ void goto_symext::symex_malloc(
 
   if(object_type.id()==ID_array)
   {
-    rhs.type()=pointer_typet(value_symbol.type.subtype());
+    rhs.type()=pointer_type(value_symbol.type.subtype());
     index_exprt index_expr(value_symbol.type.subtype());
     index_expr.array()=value_symbol.symbol_expr();
     index_expr.index()=from_integer(0, index_type());
@@ -177,7 +178,7 @@ void goto_symext::symex_malloc(
   else
   {
     rhs.op0()=value_symbol.symbol_expr();
-    rhs.type()=pointer_typet(value_symbol.type);
+    rhs.type()=pointer_type(value_symbol.type);
   }
 
   if(rhs.type()!=lhs.type())
@@ -360,6 +361,11 @@ void goto_symext::symex_output(
   target.output(state.guard.as_expr(), state.source, output_id, args);
 }
 
+/// Handles side effects of type 'new' for C++ and 'new array'
+/// for C++ and Java language modes
+/// \param state: Symex state
+/// \param lhs: left-hand side of assignment
+/// \param code: right-hand side containing side effect
 void goto_symext::symex_cpp_new(
   statet &state,
   const exprt &lhs,
@@ -396,14 +402,13 @@ void goto_symext::symex_cpp_new(
   else
     symbol.type=code.type().subtype();
 
-  // symbol.type.set("#active", symbol_expr(active_symbol));
   symbol.type.set("#dynamic", true);
 
   new_symbol_table.add(symbol);
 
   // make symbol expression
 
-  exprt rhs(ID_address_of, pointer_typet());
+  exprt rhs(ID_address_of, code.type());
   rhs.type().subtype()=code.type().subtype();
 
   if(do_array)
@@ -424,7 +429,10 @@ void goto_symext::symex_cpp_delete(
   statet &state,
   const codet &code)
 {
-  // bool do_array=code.get(ID_statement)==ID_cpp_delete_array;
+  // TODO
+  #if 0
+  bool do_array=code.get(ID_statement)==ID_cpp_delete_array;
+  #endif
 }
 
 void goto_symext::symex_trace(

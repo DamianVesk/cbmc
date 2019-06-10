@@ -6,6 +6,7 @@ Author: Daniel Kroening, kroening@kroening.com
 
 \*******************************************************************/
 
+#include "simplify_expr.h"
 
 #include <cassert>
 #include <algorithm>
@@ -13,7 +14,6 @@ Author: Daniel Kroening, kroening@kroening.com
 #include "c_types.h"
 #include "rational.h"
 #include "simplify_expr_class.h"
-#include "simplify_expr.h"
 #include "mp_arith.h"
 #include "arith_tools.h"
 #include "replace_expr.h"
@@ -221,7 +221,7 @@ bool simplify_exprt::simplify_typecast(exprt &expr)
     return false;
   }
 
-  // elminiate casts to proper bool
+  // eliminate casts to proper bool
   if(expr_type.id()==ID_bool)
   {
     // rewrite (bool)x to x!=0
@@ -236,7 +236,7 @@ bool simplify_exprt::simplify_typecast(exprt &expr)
     return false;
   }
 
-  // elminiate casts to _Bool
+  // eliminate casts to _Bool
   if(expr_type.id()==ID_c_bool &&
      op_type.id()!=ID_bool)
   {
@@ -1348,7 +1348,7 @@ bool simplify_exprt::simplify_update(exprt &expr)
       value_ptr=&value_ptr->operands()[number];
     }
     else
-      return true; // give up, unkown designator
+      return true; // give up, unknown designator
   }
 
   // found, done
@@ -1538,7 +1538,7 @@ exprt simplify_exprt::bits2expr(
 
     mp_integer size;
     if(to_integer(array_type.size(), size))
-      assert(false);
+      UNREACHABLE;
     std::size_t n_el=integer2size_t(size);
 
     std::size_t el_size=
@@ -2230,8 +2230,7 @@ bool simplify_exprt::simplify_node(exprt &expr)
     result=simplify_mod(expr) && result;
   else if(expr.id()==ID_bitnot)
     result=simplify_bitnot(expr) && result;
-  else if(expr.id()==ID_bitnot ||
-          expr.id()==ID_bitand ||
+  else if(expr.id()==ID_bitand ||
           expr.id()==ID_bitor ||
           expr.id()==ID_bitxor)
     result=simplify_bitwise(expr) && result;

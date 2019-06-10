@@ -11,6 +11,8 @@ Date: January 2012
 /// \file
 /// File Utilities
 
+#include "file_util.h"
+
 #include <cerrno>
 
 #if defined(__linux__) || \
@@ -38,8 +40,6 @@ Date: January 2012
 #include <cstring>
 #endif
 
-#include "file_util.h"
-
 /// \return current working directory
 std::string get_current_working_directory()
 {
@@ -51,7 +51,7 @@ std::string get_current_working_directory()
 
   errno=0;
 
-  while(buf && getcwd(buf, bsize-1)==NULL && errno==ERANGE)
+  while(buf && getcwd(buf, bsize-1)==nullptr && errno==ERANGE)
   {
     bsize*=2;
     buf=reinterpret_cast<char*>(realloc(buf, sizeof(char)*bsize));
@@ -98,10 +98,10 @@ void delete_directory(const std::string &path)
   delete_directory_utf16(utf8_to_utf16_little_endian(path));
 #else
   DIR *dir=opendir(path.c_str());
-  if(dir!=NULL)
+  if(dir!=nullptr)
   {
     struct dirent *ent;
-    while((ent=readdir(dir))!=NULL)
+    while((ent=readdir(dir))!=nullptr)
     {
       // Needed for Alpine Linux
       if(strcmp(ent->d_name, ".")==0 || strcmp(ent->d_name, "..")==0)
@@ -110,12 +110,18 @@ void delete_directory(const std::string &path)
       std::string sub_path=path+"/"+ent->d_name;
 
       struct stat stbuf;
-      stat(sub_path.c_str(), &stbuf);
+      int result=stat(sub_path.c_str(), &stbuf);
+      if(result!=0)
+        throw std::string("Stat failed: ")+std::strerror(errno);
 
       if(S_ISDIR(stbuf.st_mode))
         delete_directory(sub_path);
       else
-        remove(sub_path.c_str());
+      {
+        result=remove(sub_path.c_str());
+        if(result!=0)
+          throw std::string("Remove failed: ")+std::strerror(errno);
+      }
     }
     closedir(dir);
   }

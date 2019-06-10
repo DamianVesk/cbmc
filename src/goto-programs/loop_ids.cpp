@@ -9,14 +9,14 @@ Author: Daniel Kroening, kroening@kroening.com
 /// \file
 /// Loop IDs
 
+#include "loop_ids.h"
+
 #include <iostream>
 
 #include <util/xml.h>
 #include <util/xml_expr.h>
 #include <util/json.h>
 #include <util/json_expr.h>
-
-#include "loop_ids.h"
 
 void show_loop_ids(
   ui_message_handlert::uit ui,
@@ -67,7 +67,7 @@ void show_loop_ids(
       break;
     }
     case ui_message_handlert::uit::JSON_UI:
-      assert(false); // use function below
+      UNREACHABLE; // use function below
   }
 }
 

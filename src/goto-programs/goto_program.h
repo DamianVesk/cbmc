@@ -20,7 +20,6 @@ Author: Daniel Kroening, kroening@kroening.com
 
 /*! \brief A specialization of goto_program_templatet over
            goto programs in which instructions have codet type.
-    \ingroup gr_goto_programs
 */
 class goto_programt:public goto_program_templatet<codet, exprt>
 {
@@ -77,10 +76,17 @@ public:
       it!=(program).instructions.end(); it++)
 
 inline bool operator<(
-  const goto_programt::const_targett i1,
-  const goto_programt::const_targett i2)
+  const goto_programt::const_targett &i1,
+  const goto_programt::const_targett &i2)
 {
   return order_const_target<codet, exprt>(i1, i2);
+}
+
+inline bool operator<(
+  const goto_programt::targett &i1,
+  const goto_programt::targett &i2)
+{
+  return &(*i1)<&(*i2);
 }
 
 // NOLINTNEXTLINE(readability/identifiers)

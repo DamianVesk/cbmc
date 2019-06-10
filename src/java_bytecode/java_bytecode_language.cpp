@@ -6,6 +6,7 @@ Author: Daniel Kroening, kroening@kroening.com
 
 \*******************************************************************/
 
+#include "java_bytecode_language.h"
 
 #include <string>
 
@@ -18,7 +19,6 @@ Author: Daniel Kroening, kroening@kroening.com
 
 #include <goto-programs/class_hierarchy.h>
 
-#include "java_bytecode_language.h"
 #include "java_bytecode_convert_class.h"
 #include "java_bytecode_convert_method.h"
 #include "java_bytecode_internal_additions.h"
@@ -142,7 +142,7 @@ bool java_bytecode_languaget::parse(
       java_class_loader.add_jar_file(path);
   }
   else
-    assert(false);
+    UNREACHABLE;
 
   if(!main_class.empty())
   {

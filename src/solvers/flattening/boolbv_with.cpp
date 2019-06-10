@@ -6,6 +6,7 @@ Author: Daniel Kroening, kroening@kroening.com
 
 \*******************************************************************/
 
+#include "boolbv.h"
 
 #include <util/std_types.h>
 #include <util/std_expr.h>
@@ -13,8 +14,6 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <util/base_type.h>
 #include <util/endianness_map.h>
 #include <util/config.h>
-
-#include "boolbv.h"
 
 bvt boolbvt::convert_with(const exprt &expr)
 {
@@ -37,7 +36,13 @@ bvt boolbvt::convert_with(const exprt &expr)
   std::size_t width=boolbv_width(expr.type());
 
   if(width==0)
-    return conversion_failed(expr);
+  {
+    // A zero-length array is acceptable:
+    if(expr.type().id()==ID_array && boolbv_width(expr.type().subtype())!=0)
+      return bvt();
+    else
+      return conversion_failed(expr);
+  }
 
   if(bv.size()!=width)
   {

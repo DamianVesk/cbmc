@@ -6,6 +6,7 @@ Author: Daniel Kroening, kroening@kroening.com
 
 \*******************************************************************/
 
+#include "c_preprocess.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -30,8 +31,6 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <util/arith_tools.h>
 #include <util/std_types.h>
 #include <util/prefix.h>
-
-#include "c_preprocess.h"
 
 #define GCC_DEFINES_16 \
   " -D__INT_MAX__=32767"\
@@ -107,7 +106,7 @@ static std::string type_max(const typet &src)
     return integer2string(
       power(2, to_unsignedbv_type(src).get_width()-1)-1);
   else
-    assert(false);
+    UNREACHABLE;
 }
 
 /// quote a string for bash and CMD
@@ -345,7 +344,7 @@ bool c_preprocess(
 static bool is_dot_i_file(const std::string &path)
 {
   const char *ext=strrchr(path.c_str(), '.');
-  if(ext==NULL)
+  if(ext==nullptr)
     return false;
   if(std::string(ext)==".i" ||
      std::string(ext)==".ii")
@@ -767,7 +766,7 @@ bool c_preprocess_gcc_clang(
     else if(config.ansi_c.wchar_t_width==config.ansi_c.char_width)
       command+=" -D__WCHAR_TYPE__=\""+sig+" char\"";
     else
-      assert(false);
+      UNREACHABLE;
   }
 
   if(config.ansi_c.char_is_unsigned)
@@ -805,7 +804,7 @@ bool c_preprocess_gcc_clang(
     break;
 
   default:
-    assert(false);
+    UNREACHABLE;
   }
 
   // Standard Defines, ANSI9899 6.10.8
@@ -890,7 +889,7 @@ bool c_preprocess_gcc_clang(
 
   FILE *stream=popen(command.c_str(), "r");
 
-  if(stream!=NULL)
+  if(stream!=nullptr)
   {
     int ch;
     while((ch=fgetc(stream))!=EOF)
@@ -1012,7 +1011,7 @@ bool c_preprocess_arm(
 
   FILE *stream=popen(command.c_str(), "r");
 
-  if(stream!=NULL)
+  if(stream!=nullptr)
   {
     int ch;
     while((ch=fgetc(stream))!=EOF)

@@ -9,9 +9,9 @@ Author: Daniel Kroening, kroening@cs.cmu.edu
 /// \file
 /// C++ Language Type Checking
 
-#include <set>
-
 #include "cpp_typecheck.h"
+
+#include <set>
 
 void cpp_typecheckt::typecheck_compound_bases(struct_typet &type)
 {
@@ -209,7 +209,7 @@ void cpp_typecheckt::add_base_components(
         component.set_access(ID_private);
     }
     else
-      assert(false);
+      UNREACHABLE;
 
     // put into scope
   }

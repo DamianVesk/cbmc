@@ -9,6 +9,8 @@ Author: Daniel Kroening, kroening@cs.cmu.edu
 /// \file
 /// C++ Language Type Checking
 
+#include "cpp_typecheck.h"
+
 #include <algorithm>
 
 #include <util/arith_tools.h>
@@ -18,7 +20,6 @@ Author: Daniel Kroening, kroening@cs.cmu.edu
 #include <linking/zero_initializer.h>
 #include <ansi-c/c_typecast.h>
 
-#include "cpp_typecheck.h"
 #include "expr2cpp.h"
 #include "cpp_convert_type.h"
 #include "cpp_declarator.h"
@@ -249,7 +250,7 @@ void cpp_typecheckt::do_not_typechecked()
           cont=true;
         }
         else
-          assert(0); // Don't know what to do!
+          UNREACHABLE; // Don't know what to do!
       }
     }
   }

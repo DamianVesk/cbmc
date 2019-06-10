@@ -9,6 +9,8 @@ Author: Daniel Kroening, kroening@kroening.com
 /// \file
 /// Program Transformation
 
+#include "goto_convert_class.h"
+
 #include <cassert>
 
 #include <util/rational.h>
@@ -30,7 +32,6 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <util/c_types.h>
 #include <ansi-c/string_constant.h>
 
-#include "goto_convert_class.h"
 #include "format_strings.h"
 
 void goto_convertt::do_prob_uniform(
@@ -220,7 +221,7 @@ void goto_convertt::do_printf(
     }
   }
   else
-    assert(false);
+    UNREACHABLE;
 }
 
 void goto_convertt::do_scanf(
@@ -325,7 +326,7 @@ void goto_convertt::do_scanf(
     }
   }
   else
-    assert(false);
+    UNREACHABLE;
 }
 
 void goto_convertt::do_input(
@@ -601,7 +602,7 @@ void goto_convertt::do_java_new(
   // we produce a malloc side-effect, which stays
   side_effect_exprt malloc_expr(ID_malloc);
   malloc_expr.copy_to_operands(object_size);
-  malloc_expr.type()=pointer_typet(object_type);
+  malloc_expr.type()=rhs.type();
 
   goto_programt::targett t_n=dest.add_instruction(ASSIGN);
   t_n->code=code_assignt(lhs, malloc_expr);
@@ -657,7 +658,7 @@ void goto_convertt::do_java_new_array(
   // we produce a malloc side-effect, which stays
   side_effect_exprt malloc_expr(ID_malloc);
   malloc_expr.copy_to_operands(object_size);
-  malloc_expr.type()=pointer_typet(object_type);
+  malloc_expr.type()=rhs.type();
 
   goto_programt::targett t_n=dest.add_instruction(ASSIGN);
   t_n->code=code_assignt(lhs, malloc_expr);
@@ -789,7 +790,7 @@ void goto_convertt::cpp_new_initializer(
       convert(to_code(initializer), dest);
     }
     else
-      assert(false);
+      UNREACHABLE;
   }
 }
 
@@ -1352,7 +1353,7 @@ void goto_convertt::do_function_call_symbol(
   }
   else if(identifier=="__builtin_unreachable")
   {
-    // says something like assert(false);
+    // says something like UNREACHABLE;
   }
   else if(identifier==ID_gcc_builtin_va_arg)
   {
@@ -1383,8 +1384,7 @@ void goto_convertt::do_function_call_symbol(
 
     if(lhs.is_not_nil())
     {
-      typet t=pointer_typet();
-      t.subtype()=lhs.type();
+      typet t=pointer_type(lhs.type());
       dereference_exprt rhs(lhs.type());
       rhs.op0()=typecast_exprt(list_arg, t);
       rhs.add_source_location()=function.source_location();

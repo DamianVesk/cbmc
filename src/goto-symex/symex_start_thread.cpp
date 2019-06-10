@@ -9,9 +9,9 @@ Author: Daniel Kroening, kroening@kroening.com
 /// \file
 /// Symbolic Execution
 
-#include <linking/zero_initializer.h>
-
 #include "goto_symex.h"
+
+#include <linking/zero_initializer.h>
 
 void goto_symext::symex_start_thread(statet &state)
 {
@@ -67,11 +67,11 @@ void goto_symext::symex_start_thread(statet &state)
     // get L0 name for current thread
     lhs.set_level_0(t);
 
-    // setup L1 name
+    // set up L1 name
     if(!state.level1.current_names.insert(
         std::make_pair(lhs.get_l1_object_identifier(),
                        std::make_pair(lhs, 0))).second)
-      assert(false);
+      UNREACHABLE;
     state.rename(lhs, ns, goto_symex_statet::L1);
     const irep_idt l1_name=lhs.get_l1_object_identifier();
     // store it

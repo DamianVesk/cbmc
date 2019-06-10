@@ -9,6 +9,8 @@ Author: Daniel Kroening, kroening@kroening.com
 /// \file
 /// Show Claims
 
+#include "show_properties.h"
+
 #include <iostream>
 
 #include <util/xml.h>
@@ -18,7 +20,6 @@ Author: Daniel Kroening, kroening@kroening.com
 
 #include <langapi/language_util.h>
 
-#include "show_properties.h"
 #include "goto_functions.h"
 #include "goto_model.h"
 
@@ -63,7 +64,7 @@ void show_properties(
       break;
 
     case ui_message_handlert::uit::JSON_UI:
-      assert(false);
+      UNREACHABLE;
       break;
 
     case ui_message_handlert::uit::PLAIN:
@@ -78,7 +79,7 @@ void show_properties(
       break;
 
     default:
-      assert(false);
+      UNREACHABLE;
     }
   }
 }

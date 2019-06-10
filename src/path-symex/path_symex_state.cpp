@@ -9,6 +9,8 @@ Author: Daniel Kroening, kroening@kroening.com
 /// \file
 /// State of path-based symbolic simulator
 
+#include "path_symex_state.h"
+
 #include <util/simplify_expr.h>
 #include <util/arith_tools.h>
 #include <util/decision_procedure.h>
@@ -18,8 +20,6 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <pointer-analysis/dereference.h>
 
 #include <goto-symex/adjust_float_expressions.h>
-
-#include "path_symex_state.h"
 
 #ifdef DEBUG
 #include <iostream>
@@ -39,12 +39,6 @@ path_symex_statet initial_state(
   s.set_current_thread(0);
 
   return s;
-}
-
-loc_reft path_symex_statet::get_pc() const
-{
-  assert(current_thread<threads.size());
-  return threads[current_thread].pc;
 }
 
 void path_symex_statet::output(const threadt &thread, std::ostream &out) const

@@ -9,9 +9,11 @@ Author: Daniel Kroening, kroening@cs.cmu.edu
 /// \file
 /// C++ Language Type Checking
 
+#include "template_map.h"
+
 #include <ostream>
 
-#include "template_map.h"
+#include <util/invariant.h>
 
 void template_mapt::apply(typet &type) const
 {
@@ -190,7 +192,7 @@ void template_mapt::set(
   if(parameter.id()==ID_type)
   {
     if(parameter.id()!=ID_type)
-      assert(false); // typechecked before!
+      UNREACHABLE; // typechecked before!
 
     typet tmp=value.type();
 
@@ -202,7 +204,7 @@ void template_mapt::set(
     // must be non-type
 
     if(value.id()==ID_type)
-      assert(false); // typechecked before!
+      UNREACHABLE; // typechecked before!
 
     irep_idt identifier=parameter.get(ID_identifier);
     expr_map[identifier]=value;

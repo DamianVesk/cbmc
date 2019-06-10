@@ -9,6 +9,8 @@ Author: Daniel Kroening, kroening@kroening.com
 /// \file
 /// Symex Command Line Options Processing
 
+#include "symex_parse_options.h"
+
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
@@ -34,6 +36,7 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <goto-programs/goto_inline.h>
 #include <goto-programs/xml_goto_trace.h>
 #include <goto-programs/remove_complex.h>
+#include <goto-programs/remove_function_pointers.h>
 #include <goto-programs/remove_vector.h>
 #include <goto-programs/remove_virtual_functions.h>
 #include <goto-programs/remove_exceptions.h>
@@ -52,7 +55,6 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <path-symex/locs.h>
 
 #include "path_search.h"
-#include "symex_parse_options.h"
 
 symex_parse_optionst::symex_parse_optionst(int argc, const char **argv):
   parse_options_baset(SYMEX_OPTIONS, argc, argv),
@@ -185,6 +187,10 @@ int symex_parse_optionst::doit()
       path_search.set_unwind_limit(
         unsafe_string2unsigned(cmdline.get_value("unwind")));
 
+    if(cmdline.isset("max-search-time"))
+      path_search.set_time_limit(
+        safe_string2unsigned(cmdline.get_value("max-search-time")));
+
     if(cmdline.isset("dfs"))
       path_search.set_dfs();
 
@@ -299,6 +305,12 @@ bool symex_parse_optionst::process_goto_program(const optionst &options)
     // remove stuff
     remove_complex(goto_model);
     remove_vector(goto_model);
+    // remove function pointers
+    status() << "Removal of function pointers and virtual functions" << eom;
+    remove_function_pointers(
+      get_message_handler(),
+      goto_model,
+      cmdline.isset("pointer-check"));
     // Java virtual functions -> explicit dispatch tables:
     remove_virtual_functions(goto_model);
     // Java throw and catch -> explicit exceptional return variables:
@@ -349,7 +361,7 @@ bool symex_parse_optionst::process_goto_program(const optionst &options)
         return true;
       }
 
-      status() << "Instrumenting coverge goals" << eom;
+      status() << "Instrumenting coverage goals" << eom;
       instrument_cover_goals(symbol_table, goto_model.goto_functions, c);
       goto_model.goto_functions.update();
     }
@@ -481,7 +493,7 @@ void symex_parse_optionst::report_success()
     break;
 
   default:
-    assert(false);
+    UNREACHABLE;
   }
 }
 
@@ -506,7 +518,7 @@ void symex_parse_optionst::show_counterexample(
     break;
 
   default:
-    assert(false);
+    UNREACHABLE;
   }
 }
 
@@ -529,7 +541,7 @@ void symex_parse_optionst::report_failure()
     break;
 
   default:
-    assert(false);
+    UNREACHABLE;
   }
 }
 
@@ -606,6 +618,7 @@ void symex_parse_optionst::help()
     " --depth nr                   limit search depth\n"
     " --context-bound nr           limit number of context switches\n"
     " --branch-bound nr            limit number of branches taken\n"
+    " --max-search-time s          limit search to approximately s seconds\n"
     "\n"
     "Other options:\n"
     " --version                    show version and exit\n"

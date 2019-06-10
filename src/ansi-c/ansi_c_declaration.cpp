@@ -9,13 +9,14 @@ Author: Daniel Kroening, kroening@kroening.com
 /// \file
 /// ANSI-C Language Type Checking
 
+#include "ansi_c_declaration.h"
+
 #include <ostream>
 #include <cassert>
 
 #include <util/config.h>
 #include <util/std_types.h>
-
-#include "ansi_c_declaration.h"
+#include <util/invariant.h>
 
 void ansi_c_declaratort::build(irept &src)
 {
@@ -36,7 +37,7 @@ void ansi_c_declaratort::build(irept &src)
     else if(t.id().empty() ||
             t.is_nil())
     {
-      assert(0);
+      UNREACHABLE;
     }
     else if(t.id()==ID_abstract)
     {
@@ -108,7 +109,7 @@ typet ansi_c_declarationt::full_type(
       p=&(p->subtypes().back());
     }
     else
-      assert(false);
+      UNREACHABLE;
   }
 
   *p=type();
@@ -128,6 +129,7 @@ void ansi_c_declarationt::to_symbol(
   symbol.value=declarator.value();
   symbol.type=full_type(declarator);
   symbol.name=declarator.get_name();
+  symbol.pretty_name=symbol.name;
   symbol.base_name=declarator.get_base_name();
   symbol.is_type=get_is_typedef();
   symbol.location=declarator.source_location();

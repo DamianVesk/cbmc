@@ -6,11 +6,11 @@ Author: Daniel Kroening, kroening@kroening.com
 
 \*******************************************************************/
 
+#include "config.h"
 
 #include <cstdlib>
 
 #include "namespace.h"
-#include "config.h"
 #include "symbol_table.h"
 #include "arith_tools.h"
 #include "cmdline.h"
@@ -171,7 +171,7 @@ void configt::ansi_ct::set_arch_spec_i386()
     break;
 
   case flavourt::NONE:
-    assert(false);
+    UNREACHABLE;
   }
 }
 
@@ -208,7 +208,7 @@ void configt::ansi_ct::set_arch_spec_x86_64()
     break;
 
   case flavourt::NONE:
-    assert(false);
+    UNREACHABLE;
   }
 }
 
@@ -269,7 +269,7 @@ void configt::ansi_ct::set_arch_spec_power(const irep_idt &subarch)
     break;
 
   case flavourt::NONE:
-    assert(false);
+    UNREACHABLE;
   }
 }
 
@@ -312,7 +312,7 @@ void configt::ansi_ct::set_arch_spec_arm(const irep_idt &subarch)
     break;
 
   case flavourt::NONE:
-    assert(false);
+    UNREACHABLE;
   }
 }
 
@@ -341,7 +341,7 @@ void configt::ansi_ct::set_arch_spec_alpha()
     break;
 
   case flavourt::NONE:
-    assert(false);
+    UNREACHABLE;
   }
 }
 
@@ -381,7 +381,7 @@ void configt::ansi_ct::set_arch_spec_mips(const irep_idt &subarch)
     break;
 
   case flavourt::VISUAL_STUDIO:
-    assert(false); // not supported by Visual Studio
+    UNREACHABLE; // not supported by Visual Studio
     break;
 
   case flavourt::APPLE:
@@ -391,7 +391,7 @@ void configt::ansi_ct::set_arch_spec_mips(const irep_idt &subarch)
     break;
 
   case flavourt::NONE:
-    assert(false);
+    UNREACHABLE;
   }
 }
 
@@ -410,7 +410,7 @@ void configt::ansi_ct::set_arch_spec_s390()
     break;
 
   case flavourt::VISUAL_STUDIO:
-    assert(false); // not supported by Visual Studio
+    UNREACHABLE; // not supported by Visual Studio
     break;
 
   case flavourt::APPLE:
@@ -420,7 +420,7 @@ void configt::ansi_ct::set_arch_spec_s390()
     break;
 
   case flavourt::NONE:
-    assert(false);
+    UNREACHABLE;
   }
 }
 
@@ -438,7 +438,7 @@ void configt::ansi_ct::set_arch_spec_s390x()
     break;
 
   case flavourt::VISUAL_STUDIO:
-    assert(false); // not supported by Visual Studio
+    UNREACHABLE; // not supported by Visual Studio
     break;
 
   case flavourt::APPLE:
@@ -448,7 +448,7 @@ void configt::ansi_ct::set_arch_spec_s390x()
     break;
 
   case flavourt::NONE:
-    assert(false);
+    UNREACHABLE;
   }
 }
 
@@ -478,7 +478,7 @@ void configt::ansi_ct::set_arch_spec_sparc(const irep_idt &subarch)
     break;
 
   case flavourt::VISUAL_STUDIO:
-    assert(false); // not supported by Visual Studio
+    UNREACHABLE; // not supported by Visual Studio
     break;
 
   case flavourt::APPLE:
@@ -488,7 +488,7 @@ void configt::ansi_ct::set_arch_spec_sparc(const irep_idt &subarch)
     break;
 
   case flavourt::NONE:
-    assert(false);
+    UNREACHABLE;
   }
 }
 
@@ -519,7 +519,7 @@ void configt::ansi_ct::set_arch_spec_ia64()
     break;
 
   case flavourt::NONE:
-    assert(false);
+    UNREACHABLE;
   }
 }
 
@@ -544,7 +544,7 @@ void configt::ansi_ct::set_arch_spec_x32()
     break;
 
   case flavourt::VISUAL_STUDIO:
-    assert(false); // not supported by Visual Studio
+    UNREACHABLE; // not supported by Visual Studio
     break;
 
   case flavourt::APPLE:
@@ -554,7 +554,7 @@ void configt::ansi_ct::set_arch_spec_x32()
     break;
 
   case flavourt::NONE:
-    assert(false);
+    UNREACHABLE;
   }
 }
 
@@ -598,7 +598,7 @@ void configt::ansi_ct::set_arch_spec_hppa()
     break;
 
   case flavourt::VISUAL_STUDIO:
-    assert(false); // not supported by Visual Studio
+    UNREACHABLE; // not supported by Visual Studio
     break;
 
   case flavourt::APPLE:
@@ -608,7 +608,7 @@ void configt::ansi_ct::set_arch_spec_hppa()
     break;
 
   case flavourt::NONE:
-    assert(false);
+    UNREACHABLE;
   }
 }
 
@@ -628,7 +628,7 @@ void configt::ansi_ct::set_arch_spec_sh4()
     break;
 
   case flavourt::VISUAL_STUDIO:
-    assert(false); // not supported by Visual Studio
+    UNREACHABLE; // not supported by Visual Studio
     break;
 
   case flavourt::APPLE:
@@ -638,7 +638,7 @@ void configt::ansi_ct::set_arch_spec_sh4()
     break;
 
   case flavourt::NONE:
-    assert(false);
+    UNREACHABLE;
   }
 }
 
@@ -739,7 +739,7 @@ bool configt::set(const cmdlinet &cmdline)
   ansi_c.arch="none";
   ansi_c.lib=configt::ansi_ct::libt::LIB_NONE;
   // NOLINTNEXTLINE(readability/casting)
-  ansi_c.NULL_is_zero=reinterpret_cast<size_t>((void*)0)==0;
+  ansi_c.NULL_is_zero=reinterpret_cast<size_t>(nullptr)==0;
 
   // Default is ROUND_TO_EVEN, justified by C99:
   // 1 At program startup the floating-point environment is initialized as
@@ -773,7 +773,7 @@ bool configt::set(const cmdlinet &cmdline)
   {
     // environment variable set?
     const char *CLASSPATH=getenv("CLASSPATH");
-    if(CLASSPATH!=NULL)
+    if(CLASSPATH!=nullptr)
       set_classpath(CLASSPATH);
     else
       set_classpath("."); // default
@@ -855,6 +855,9 @@ bool configt::set(const cmdlinet &cmdline)
       #ifdef _WIN32
       ansi_c.defines.push_back("__CYGWIN__");
       #endif
+
+      // MinGW has extra defines
+      ansi_c.defines.push_back("__int64=\"long long\"");
     }
     else
     {

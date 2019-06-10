@@ -9,14 +9,14 @@ Author: Daniel Kroening, kroening@kroening.com
 /// \file
 /// Show program locations
 
+#include "show_locations.h"
+
 #include <iostream>
 
 #include <util/xml.h>
 #include <util/xml_irep.h>
 
 #include <langapi/language_util.h>
-
-#include "show_locations.h"
 
 void show_locations(
   ui_message_handlert::uit ui,
@@ -57,7 +57,7 @@ void show_locations(
       break;
 
     default:
-      assert(false);
+      UNREACHABLE;
     }
   }
 }

@@ -9,6 +9,8 @@ Author: Daniel Kroening, kroening@kroening.com
 /// \file
 /// Program Transformation
 
+#include "goto_convert.h"
+
 #include <cassert>
 
 #include <util/cprover_prefix.h>
@@ -22,7 +24,6 @@ Author: Daniel Kroening, kroening@kroening.com
 
 #include <util/c_types.h>
 
-#include "goto_convert.h"
 #include "goto_convert_class.h"
 #include "destructor.h"
 
@@ -296,7 +297,7 @@ void goto_convertt::finish_guarded_gotos(goto_programt &dest)
     gg.gotoiter->guard=gg.guard;
     // goto_programt doesn't provide an erase operation,
     // perhaps for a good reason, so let's be cautious and just
-    // flatten the un-needed instructions into skips.
+    // flatten the unneeded instructions into skips.
     for(auto it=gg.ifiter, itend=gg.gotoiter; it!=itend; ++it)
       it->make_skip();
   }
@@ -375,21 +376,13 @@ void goto_convertt::convert_switch_case(
   const code_switch_caset &code,
   goto_programt &dest)
 {
-  if(code.operands().size()!=2)
-  {
-    error().source_location=code.find_source_location();
-    error() << "switch-case statement expected to have two operands"
-            << eom;
-    throw 0;
-  }
-
   goto_programt tmp;
   convert(code.code(), tmp);
 
   goto_programt::targett target=tmp.instructions.begin();
   dest.destructive_append(tmp);
 
-  // default?
+  // is a default target given?
 
   if(code.is_default())
     targets.set_default(target);
@@ -711,9 +704,7 @@ void goto_convertt::convert_decl(
   if(destructor.is_not_nil())
   {
     // add "this"
-    exprt this_expr(ID_address_of, pointer_typet());
-    this_expr.type().subtype()=symbol.type;
-    this_expr.copy_to_operands(symbol_expr);
+    address_of_exprt this_expr(symbol_expr, pointer_type(symbol.type));
     destructor.arguments().push_back(this_expr);
 
     targets.destructor_stack.push_back(destructor);
@@ -858,7 +849,7 @@ void goto_convertt::convert_cpp_delete(
   else if(code.get_statement()==ID_cpp_delete)
     delete_identifier="__delete";
   else
-    assert(false);
+    UNREACHABLE;
 
   if(destructor.is_not_nil())
   {
@@ -877,7 +868,7 @@ void goto_convertt::convert_cpp_delete(
       convert(tmp_code, dest);
     }
     else
-      assert(false);
+      UNREACHABLE;
   }
 
   // now do "free"
@@ -1226,6 +1217,7 @@ void goto_convertt::convert_switch(
   //   default: Pd;
   // }
   // --------------------
+  // location
   // x: if(v==x) goto X;
   // y: if(v==y) goto Y;
   //    goto d;
@@ -1234,13 +1226,19 @@ void goto_convertt::convert_switch(
   // d: Pd;
   // z: ;
 
-  if(code.operands().size()<2)
-  {
-    error().source_location=code.find_source_location();
-    error() << "switch takes at least two operands" << eom;
-    throw 0;
-  }
+  // we first add a 'location' node for the switch statement,
+  // which would otherwise not be recorded
+  dest.add_instruction()->make_location(
+    code.source_location());
 
+  // get the location of the end of the body, but
+  // default to location of switch, if none
+  source_locationt body_end_location=
+    code.body().get_statement()==ID_block?
+      to_code_block(code.body()).end_location():
+      code.source_location();
+
+  // do the value we switch over
   exprt argument=code.value();
 
   goto_programt sideeffects;
@@ -1253,7 +1251,7 @@ void goto_convertt::convert_switch(
   goto_programt tmp_z;
   goto_programt::targett z=tmp_z.add_instruction();
   z->make_skip();
-  z->source_location=code.source_location();
+  z->source_location=body_end_location;
 
   // set the new targets -- continue stays as is
   targets.set_break(z);
@@ -1262,10 +1260,7 @@ void goto_convertt::convert_switch(
   targets.cases_map.clear();
 
   goto_programt tmp;
-
-  forall_operands(it, code)
-    if(it!=code.operands().begin())
-      convert(to_code(*it), tmp);
+  convert(code.body(), tmp);
 
   goto_programt tmp_cases;
 
@@ -1807,7 +1802,7 @@ void goto_convertt::generate_ifthenelse(
      true_case.instructions.back().labels.empty())
   {
     // The above conjunction deliberately excludes the instance
-    // if(some) { label: assert(0); }
+    // if(some) { label: assert(false); }
     true_case.instructions.back().guard=boolean_negate(guard);
     dest.destructive_append(true_case);
     true_case.instructions.clear();
@@ -1820,7 +1815,7 @@ void goto_convertt::generate_ifthenelse(
      false_case.instructions.back().labels.empty())
   {
     // The above conjunction deliberately excludes the instance
-    // if(some) ... else { label: assert(0); }
+    // if(some) ... else { label: assert(false); }
     false_case.instructions.back().guard=guard;
     dest.destructive_append(false_case);
     false_case.instructions.clear();

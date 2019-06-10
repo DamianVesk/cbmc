@@ -6,11 +6,10 @@ Author: Daniel Kroening, kroening@kroening.com
 
 \*******************************************************************/
 
+#include "find_symbols.h"
 
 #include "std_types.h"
 #include "std_expr.h"
-
-#include "find_symbols.h"
 
 enum class kindt { F_TYPE, F_TYPE_NON_PTR, F_EXPR, F_BOTH };
 
@@ -124,6 +123,10 @@ void find_symbols(kindt kind, const typet &src, find_symbols_sett &dest)
 
     forall_subtypes(it, src)
       find_symbols(kind, *it, dest);
+
+    const irep_idt &typedef_name=src.get(ID_C_typedef);
+    if(!typedef_name.empty())
+      dest.insert(typedef_name);
   }
 
   if(src.id()==ID_struct ||

@@ -6,6 +6,7 @@ Author: Daniel Kroening, kroening@kroening.com
 
 \*******************************************************************/
 
+#include "arith_tools.h"
 
 #include <cassert>
 
@@ -13,8 +14,6 @@ Author: Daniel Kroening, kroening@kroening.com
 #include "ieee_float.h"
 #include "std_types.h"
 #include "std_expr.h"
-
-#include "arith_tools.h"
 
 bool to_integer(const exprt &expr, mp_integer &int_value)
 {
@@ -200,7 +199,7 @@ constant_exprt from_integer(
   }
 
   {
-    assert(false);
+    PRECONDITION(false);
     constant_exprt r;
     r.make_nil();
     return r;

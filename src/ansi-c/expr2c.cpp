@@ -6,6 +6,7 @@ Author: Daniel Kroening, kroening@kroening.com
 
 \*******************************************************************/
 
+#include "expr2c.h"
 
 #include <cassert>
 #include <cctype>
@@ -38,7 +39,6 @@ Author: Daniel Kroening, kroening@kroening.com
 
 #include "c_misc.h"
 #include "c_qualifiers.h"
-#include "expr2c.h"
 #include "expr2c_class.h"
 
 /*
@@ -114,7 +114,7 @@ void expr2ct::get_shorthands(const exprt &expr)
     ns_collision[symbol->location.get_function()].insert(sh);
 
     if(!shorthands.insert(std::make_pair(*it, sh)).second)
-      assert(false);
+      UNREACHABLE;
   }
 
   for(find_symbols_sett::const_iterator
@@ -558,6 +558,14 @@ std::string expr2ct::convert_rec(
 
     c_qualifierst ret_qualifiers;
     ret_qualifiers.read(code_type.return_type());
+    // _Noreturn should go with the return type
+    if(new_qualifiers.is_noreturn)
+    {
+      ret_qualifiers.is_noreturn=true;
+      new_qualifiers.is_noreturn=false;
+      q=new_qualifiers.as_string();
+    }
+
     const typet &return_type=code_type.return_type();
 
     // return type may be a function pointer or array
@@ -1833,11 +1841,14 @@ std::string expr2ct::convert_constant(
 
     if(dest!="" && isdigit(dest[dest.size()-1]))
     {
+      if(dest.find('.')==std::string::npos)
+        dest+=".0";
+
+      // ANSI-C: double is default; float/long-double require annotation
       if(src.type()==float_type())
         dest+='f';
-      else if(src.type()==double_type())
-        dest+=""; // ANSI-C: double is default
-      else if(src.type()==long_double_type())
+      else if(src.type()==long_double_type() &&
+              double_type()!=long_double_type())
         dest+='l';
     }
     else if(dest.size()==4 &&
@@ -1943,7 +1954,7 @@ std::string expr2ct::convert_struct(
 /// \param src: The struct declaration expression
 /// precedence
 /// \param include_padding_components: Should the generated C code include the
-///   padding members added to structs for GOTOs benifit
+///   padding members added to structs for GOTOs benefit
 /// \return A string representation of the struct expression
 std::string expr2ct::convert_struct(
   const exprt &src,
@@ -2654,7 +2665,7 @@ std::string expr2ct::convert_code_decl(
 
   std::string dest=indent_str(indent);
 
-  const symbolt *symbol=0;
+  const symbolt *symbol=nullptr;
   if(!ns.lookup(to_symbol_expr(src.op0()).get_identifier(), symbol))
   {
     if(symbol->is_file_local &&
@@ -3522,7 +3533,11 @@ std::string expr2ct::convert_with_precedence(
     return convert_function(src, "isinf", precedence=16);
 
   else if(src.id()==ID_bswap)
-    return convert_function(src, "bswap", precedence=16);
+    return convert_function(
+      src,
+      "__builtin_bswap"+
+      integer2string(pointer_offset_bits(src.op0().type(), ns)),
+      precedence=16);
 
   else if(src.id()==ID_isnormal)
     return convert_function(src, "isnormal", precedence=16);

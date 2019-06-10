@@ -9,6 +9,8 @@ Author:
 /// \file
 /// Read Goto Programs
 
+#include "read_goto_binary.h"
+
 #if defined(__linux__) || \
     defined(__FreeBSD_kernel__) || \
     defined(__GNU__) || \
@@ -32,7 +34,6 @@ Author:
 #include <linking/linking_class.h>
 
 #include "goto_model.h"
-#include "read_goto_binary.h"
 #include "read_bin_goto_object.h"
 #include "elf_reader.h"
 #include "osx_fat_reader.h"
@@ -302,7 +303,7 @@ static bool link_functions(
   rename_symbolt macro_application;
 
   forall_symbols(it, dest_symbol_table.symbols)
-    if(it->second.is_macro)
+    if(it->second.is_macro && !it->second.is_type)
     {
       const symbolt &symbol=it->second;
 

@@ -10,6 +10,8 @@ Author: Daniel Kroening, kroening@kroening.com
 /// \file
 /// Loop unwinding
 
+#include "unwind.h"
+
 #ifdef DEBUG
 #include <iostream>
 #endif
@@ -18,7 +20,6 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <util/string_utils.h>
 #include <goto-programs/goto_functions.h>
 
-#include "unwind.h"
 #include "loop_utils.h"
 
 void parse_unwindset(const std::string &us, unwind_sett &unwind_set)
@@ -176,7 +177,7 @@ void goto_unwindt::unwind(
     else if(unwind_strategy==unwind_strategyt::ASSUME)
       new_t->make_assumption(exit_cond);
     else
-      assert(false);
+      UNREACHABLE;
 
     new_t->source_location=loop_head->source_location;
     new_t->function=loop_head->function;

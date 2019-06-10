@@ -9,12 +9,12 @@ Author: Daniel Kroening, kroening@kroening.com
 /// \file
 /// Bounded Model Checking for ANSI-C
 
+#include "symex_bmc.h"
+
 #include <limits>
 
 #include <util/source_location.h>
 #include <util/simplify_expr.h>
-
-#include "symex_bmc.h"
 
 symex_bmct::symex_bmct(
   const namespacet &_ns,
@@ -22,6 +22,7 @@ symex_bmct::symex_bmct(
   symex_targett &_target):
   goto_symext(_ns, _new_symbol_table, _target),
   record_coverage(false),
+  max_unwind(0),
   max_unwind_is_set(false),
   symex_coverage(_ns)
 {

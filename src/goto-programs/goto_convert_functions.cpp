@@ -8,6 +8,8 @@ Date: June 2003
 
 \*******************************************************************/
 
+#include "goto_convert_functions.h"
+
 #include <cassert>
 
 #include <util/base_type.h>
@@ -15,7 +17,6 @@ Date: June 2003
 #include <util/symbol_table.h>
 #include <util/prefix.h>
 
-#include "goto_convert_functions.h"
 #include "goto_inline.h"
 
 goto_convert_functionst::goto_convert_functionst(
@@ -227,6 +228,16 @@ void goto_convert(
 {
   goto_convert(symbol_table, goto_model.goto_functions, message_handler);
   goto_model.symbol_table.swap(symbol_table);
+}
+
+void goto_convert(
+  goto_modelt &goto_model,
+  message_handlert &message_handler)
+{
+  goto_convert(
+    goto_model.symbol_table,
+    goto_model.goto_functions,
+    message_handler);
 }
 
 void goto_convert(

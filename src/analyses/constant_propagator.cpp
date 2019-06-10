@@ -9,6 +9,8 @@ Author: Peter Schrammel
 /// \file
 /// Constant Propagation
 
+#include "constant_propagator.h"
+
 #ifdef DEBUG
 #include <iostream>
 #endif
@@ -16,8 +18,6 @@ Author: Peter Schrammel
 #include <util/find_symbols.h>
 #include <util/arith_tools.h>
 #include <util/simplify_expr.h>
-
-#include "constant_propagator.h"
 
 exprt concatenate_array_id(
 		const exprt &array, const exprt &index,
@@ -79,7 +79,7 @@ void constant_propagator_domaint::assign_rec(
         cond = simplify_expr(cond,ns);
       }
       else
-        assert(0);
+        UNREACHABLE;
 
       assign(values, to_symbol_expr(lhs), cond, ns);
 	}

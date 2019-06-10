@@ -9,6 +9,8 @@ Author: Peter Schrammel
 /// \file
 /// Fault Localization
 
+#include "fault_localization.h"
+
 #include <util/threeval.h>
 #include <util/arith_tools.h>
 #include <util/symbol.h>
@@ -21,7 +23,6 @@ Author: Peter Schrammel
 
 #include <goto-symex/build_goto_trace.h>
 
-#include "fault_localization.h"
 #include "counterexample_beautification.h"
 
 void fault_localizationt::freeze_guards()
@@ -70,7 +71,7 @@ fault_localizationt::get_failed_property()
        bmc.prop_conv.l_get(it->cond_literal).is_false())
       return it;
 
-  assert(false);
+  UNREACHABLE;
   return bmc.equation.SSA_steps.end();
 }
 

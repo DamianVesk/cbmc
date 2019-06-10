@@ -6,18 +6,16 @@ Author: Daniel Kroening, kroening@kroening.com
 
 \*******************************************************************/
 
+#include "std_expr.h"
 
 #include <cassert>
 
 #include "arith_tools.h"
 #include "byte_operators.h"
 #include "c_types.h"
-#include "config.h"
 #include "namespace.h"
 #include "pointer_offset_size.h"
-
 #include "std_types.h"
-#include "std_expr.h"
 
 bool constant_exprt::value_is_zero_string() const
 {
@@ -137,7 +135,7 @@ void object_descriptor_exprt::build(
   assert(root_object().type().id()!=ID_empty);
 }
 
-constant_exprt constant_exprt::integer_constant(unsigned v)
+static constant_exprt integer_constant(unsigned v)
 {
   return constant_exprt(std::to_string(v), integer_typet());
 }
@@ -146,7 +144,7 @@ shift_exprt::shift_exprt(
   const exprt &_src,
   const irep_idt &_id,
   const std::size_t _distance):
-  binary_exprt(_src, _id, constant_exprt::integer_constant(_distance))
+  binary_exprt(_src, _id, integer_constant(_distance))
 {
 }
 
@@ -154,7 +152,7 @@ extractbit_exprt::extractbit_exprt(
   const exprt &_src,
   const std::size_t _index):
   binary_predicate_exprt(
-    _src, ID_extractbit, constant_exprt::integer_constant(_index))
+    _src, ID_extractbit, integer_constant(_index))
 {
 }
 
@@ -168,6 +166,23 @@ extractbits_exprt::extractbits_exprt(
   assert(_upper>=_lower);
   operands().resize(3);
   src()=_src;
-  upper()=constant_exprt::integer_constant(_upper);
-  lower()=constant_exprt::integer_constant(_lower);
+  upper()=integer_constant(_upper);
+  lower()=integer_constant(_lower);
+}
+
+/*******************************************************************\
+
+Function: address_of_exprt::address_of_exprt
+
+  Inputs:
+
+ Outputs:
+
+ Purpose:
+
+\*******************************************************************/
+
+address_of_exprt::address_of_exprt(const exprt &_op):
+  unary_exprt(ID_address_of, _op, pointer_type(_op.type()))
+{
 }

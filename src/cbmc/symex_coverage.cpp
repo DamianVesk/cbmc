@@ -11,6 +11,8 @@ Date: March 2016
 /// \file
 /// Record and print code coverage of symbolic execution
 
+#include "symex_coverage.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -23,8 +25,6 @@ Date: March 2016
 
 #include <goto-programs/goto_functions.h>
 #include <goto-programs/remove_returns.h>
-
-#include "symex_coverage.h"
 
 class coverage_recordt
 {
@@ -247,7 +247,7 @@ void goto_program_coverage_recordt::compute_coverage_lines(
       branches_total+=2;
       if(!entry.first->second.conditions.insert(
           {it, coverage_conditiont()}).second)
-        assert(false);
+        UNREACHABLE;
     }
 
     symex_coveraget::coveraget::const_iterator c_entry=

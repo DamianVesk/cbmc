@@ -9,6 +9,8 @@ Author: Daniel Kroening, kroening@kroening.com
 /// \file
 /// SpecC Language Conversion
 
+#include "ansi_c_convert_type.h"
+
 #include <cassert>
 
 #include <util/c_types.h>
@@ -17,8 +19,6 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <util/config.h>
 #include <util/arith_tools.h>
 #include <util/std_types.h>
-
-#include "ansi_c_convert_type.h"
 
 void ansi_c_convert_typet::read(const typet &type)
 {
@@ -460,7 +460,7 @@ void ansi_c_convert_typet::write(typet &type)
         else
           type=unsigned_long_long_int_type();
       else
-        assert(false);
+        UNREACHABLE;
     }
     else if(gcc_int128_cnt)
     {

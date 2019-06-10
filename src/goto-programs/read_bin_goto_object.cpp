@@ -11,13 +11,14 @@ Date: June 2006
 /// \file
 /// Read goto object files.
 
+#include "read_bin_goto_object.h"
+
 #include <util/namespace.h>
 #include <util/message.h>
 #include <util/symbol_table.h>
 #include <util/irep_serialization.h>
 
 #include "goto_functions.h"
-#include "read_bin_goto_object.h"
 
 /// read goto binary format v3
 /// \par parameters: input stream, symbol_table, functions
@@ -113,7 +114,7 @@ bool read_bin_goto_object_v3(
          rev_target_map.insert(
            rev_target_map.end(),
            std::make_pair(instruction.target_number, itarget))->second!=itarget)
-        assert(false);
+        UNREACHABLE;
 
       std::size_t t_count = irepconverter.read_gb_word(in); // # of targets
       for(std::size_t i=0; i<t_count; i++)
@@ -176,9 +177,9 @@ bool read_bin_goto_object(
 
   {
     char hdr[4];
-    hdr[0]=in.get();
-    hdr[1]=in.get();
-    hdr[2]=in.get();
+    hdr[0]=static_cast<char>(in.get());
+    hdr[1]=static_cast<char>(in.get());
+    hdr[2]=static_cast<char>(in.get());
 
     if(hdr[0]=='G' && hdr[1]=='B' && hdr[2]=='F')
     {
@@ -186,7 +187,7 @@ bool read_bin_goto_object(
     }
     else
     {
-      hdr[3]=in.get();
+      hdr[3]=static_cast<char>(in.get());
       if(hdr[0]==0x7f && hdr[1]=='G' && hdr[2]=='B' && hdr[3]=='F')
       {
         // OK!

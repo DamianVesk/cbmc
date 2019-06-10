@@ -9,13 +9,14 @@ Author: Daniel Kroening, kroening@cs.cmu.edu
 /// \file
 /// C++ Language Type Checking
 
+#include "cpp_declarator_converter.h"
+
 #include <util/source_location.h>
 #include <util/std_types.h>
 
 #include <util/c_types.h>
 
 #include "cpp_type2name.h"
-#include "cpp_declarator_converter.h"
 #include "cpp_typecheck.h"
 
 cpp_declarator_convertert::cpp_declarator_convertert(
@@ -25,7 +26,8 @@ cpp_declarator_convertert::cpp_declarator_convertert(
   is_template_parameter(false),
   is_friend(false),
   linkage_spec(_cpp_typecheck.current_linkage_spec),
-  cpp_typecheck(_cpp_typecheck)
+  cpp_typecheck(_cpp_typecheck),
+  is_code(false)
 {
 }
 
@@ -89,7 +91,7 @@ symbolt &cpp_declarator_convertert::convert(
     // adjust template type
     if(final_type.id()==ID_template)
     {
-      assert(0);
+      UNREACHABLE;
       typet tmp;
       tmp.swap(final_type.subtype());
       final_type.swap(tmp);

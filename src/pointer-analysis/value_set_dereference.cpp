@@ -9,12 +9,15 @@ Author: Daniel Kroening, kroening@kroening.com
 /// \file
 /// Symbolic Execution of ANSI-C
 
+#include "value_set_dereference.h"
+
 #ifdef DEBUG
 #include <iostream>
 #endif
 
 #include <cassert>
 
+#include <util/invariant.h>
 #include <util/string2int.h>
 #include <util/expr_util.h>
 #include <util/base_type.h>
@@ -39,7 +42,6 @@ Author: Daniel Kroening, kroening@kroening.com
 
 #include <langapi/language_util.h>
 
-#include "value_set_dereference.h"
 #include "pointer_offset_sum.h"
 
 // global data, horrible
@@ -431,7 +433,7 @@ value_set_dereferencet::valuet value_set_dereferencet::build_reference_to(
     else
     {
       // We need to use byte_extract.
-      // Won't do this without a committment to an endianness.
+      // Won't do this without a commitment to an endianness.
 
       if(config.ansi_c.endianness==configt::ansi_ct::endiannesst::NO_ENDIANNESS)
       {
@@ -775,7 +777,7 @@ bool value_set_dereferencet::memory_model(
       return memory_model_conversion(value, to_type, guard, offset);
   }
 
-  // otherwise, we will stich it together from bytes
+  // otherwise, we will stitch it together from bytes
 
   return memory_model_bytes(value, to_type, guard, offset);
 }
@@ -819,7 +821,7 @@ bool value_set_dereferencet::memory_model_bytes(
   if(from_type.id()==ID_code || to_type.id()==ID_code)
     return false;
 
-  // We won't do this without a committment to an endianness.
+  // We won't do this without a commitment to an endianness.
   if(config.ansi_c.endianness==configt::ansi_ct::endiannesst::NO_ENDIANNESS)
     return false;
 
@@ -857,16 +859,24 @@ bool value_set_dereferencet::memory_model_bytes(
   {
     // upper bound
     {
-      mp_integer from_width=pointer_offset_size(from_type, ns);
-      if(from_width<=0)
-        throw "unknown or invalid type size:\n"+from_type.pretty();
+      exprt from_width=size_of_expr(from_type, ns);
+      INVARIANT(
+        from_width.is_not_nil(),
+        "unknown or invalid type size:\n"+from_type.pretty());
 
-      mp_integer to_width=
-        to_type.id()==ID_empty?0: pointer_offset_size(to_type, ns);
-      if(to_width<0)
-        throw "unknown or invalid type size:\n"+to_type.pretty();
+      exprt to_width=
+        to_type.id()==ID_empty?
+        from_integer(0, size_type()):size_of_expr(to_type, ns);
+      INVARIANT(
+        to_width.is_not_nil(),
+        "unknown or invalid type size:\n"+to_type.pretty());
+      INVARIANT(
+        from_width.type()==to_width.type(),
+        "type mismatch on result of size_of_expr");
 
-      exprt bound=from_integer(from_width-to_width, offset.type());
+      minus_exprt bound(from_width, to_width);
+      if(bound.type()!=offset.type())
+        bound.make_typecast(offset.type());
 
       binary_relation_exprt
         offset_upper_bound(offset, ID_gt, bound);

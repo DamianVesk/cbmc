@@ -1377,7 +1377,8 @@ def CleanseRawStrings(raw_lines):
 def FindNextMultiLineCommentStart(lines, lineix):
   """Find the beginning marker for a multiline comment."""
   while lineix < len(lines):
-    if lines[lineix].strip().startswith('/*'):
+    if (lines[lineix].strip().startswith('/*') or
+       lines[lineix].strip().startswith('#if 0')):
       # Only return this marker if the comment goes beyond this line
       if lines[lineix].strip().find('*/', 2) < 0:
         return lineix
@@ -1388,7 +1389,8 @@ def FindNextMultiLineCommentStart(lines, lineix):
 def FindNextMultiLineCommentEnd(lines, lineix):
   """We are inside a comment, find the end marker."""
   while lineix < len(lines):
-    if lines[lineix].strip().endswith('*/'):
+    if (lines[lineix].strip().endswith('*/') or
+       lines[lineix].strip().endswith('#endif')):
       return lineix
     lineix += 1
   return len(lines)
@@ -1967,7 +1969,9 @@ def GetHeaderGuardCPPVariable(filename):
 
   fileinfo = FileInfo(filename)
   file_path_from_root = fileinfo.RepositoryName()
-  file_path_from_root = 'CPROVER_' + file_path_from_root[4:]
+  # Remove first path component
+  offset=len(file_path_from_root.split(os.path.sep)[0])+1
+  file_path_from_root = 'CPROVER_' + file_path_from_root[offset:]
   if _root:
     suffix = os.sep
     # On Windows using directory separator will leave us with
@@ -6214,9 +6218,22 @@ def CheckItemIndentationInNamespace(filename, raw_lines_no_comments, linenum,
 
 def CheckNamespaceOrUsing(filename, clean_lines, linenum, error):
   line = clean_lines.elided[linenum]
-  if Match(r'^namespace(\s|$)', line):
-    error(filename, linenum, 'readability/namespace', 4,
-          'Do not use namespaces')
+  if Match(r'^\s*namespace(\s+.*)?$', line):
+    num_lines=len(clean_lines.elided)
+    current_linenum=linenum
+    while current_linenum<num_lines:
+      current_line=clean_lines.elided[current_linenum]
+      if current_linenum==linenum:
+        is_named=Match(r'^\s*namespace\s+[^\s{]+.*$', current_line)
+      else:
+        is_named=Match(r'^\s*[^\s{]+.*$', current_line)
+      if is_named:
+        error(filename, linenum, 'readability/namespace', 4,
+              'Do not use namespaces')
+        break
+      if '{' in current_line:
+        break
+      current_linenum+=1
   if Match(r'^using\s', line):
     error(filename, linenum, 'readability/namespace', 4,
           'Do not use using')
@@ -6496,7 +6513,7 @@ def ProcessFile(filename, vlevel, extra_check_functions=[]):
   if Search(r'(\.l|\.y|\.inc|\.d|\.o|y\.tab\.cpp|\.tab\.h|\.yy\.cpp)$', filename):
     return
 
-  if Search(r'_builtin_headers_[a-z0-9_-]+\.h$', filename):
+  if Search(r'_builtin_headers(_[a-z0-9_-]+)?\.h$', filename):
     return
 
   if not ProcessConfigOverrides(filename):
